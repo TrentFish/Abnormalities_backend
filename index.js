@@ -32,7 +32,9 @@ app.get('/api/abnormalities/:id', async(req, res, next) => {
         `;
 
         const response = await client.query(SQL,[req.params.id]);
-        console.log(response.rows[0]);
+        if(response.rows.length === 0){
+            throw new Error("This is not the ID you're looking for")
+        };
 
         res.send(response.rows);
     }catch (error) {
@@ -91,6 +93,10 @@ app.put('/api/abnormalities/:id', async(req, res, next) => {
 
 app.use('*', (req, res, next) => {
     res.status(404).send("The Abnormality you're looking for doesn't exist")
+});
+
+app.use((err, req, res, next) => {
+    res.status(500).send(err.message)
 });
 
 const start = async() => {
